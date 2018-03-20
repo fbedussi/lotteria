@@ -1,60 +1,148 @@
+:root {
+  --offCanvasWidth: 15rem;  
+  --buttonWidth: 1.8rem;
+  --transitionDuration: 0.3s;
+}
+
 * {
   box-sizing: border-box;
 }
 
 .App {
+  height: 100vh;
+  width: 100vw;
+}
+
+.App[data-serie="0"] .gameBoard {
+  background-color: #c9e9e6;
+}
+
+.App[data-serie="1"] .gameBoard {
+  background-color: #53aee3;
+}
+
+.App[data-serie="2"] .gameBoard {
+  background-color: #75c482;
+}
+
+.App[data-serie="3"] .gameBoard {
+  background-color: #f8ef3c;
+}
+
+.App[data-serie="4"] .gameBoard {
+  background-color: #ff9900;
+}
+
+.App[data-serie="5"] .gameBoard {
+  background-color: #ef5e67;
+}
+
+.App[data-serie="6"] .gameBoard {
+  background-color: #c05aa3;
+}
+
+.App[data-serie="7"] .gameBoard {
+  background-color: #eaa3b3;
+}
+
+.offCanvas {
+  position: absolute;
+  left: 0;
+  width: var(--offCanvasWidth);
+  height: 100%;
+  transform: translateX(calc(0px - var(--offCanvasWidth)));
+  transition: transform var(--transitionDuration);
+  padding: 1.5rem;
+}
+
+.gameBoard {
   display: flex;
   flex-wrap: wrap;
   height: 100vh;
-  
   overflow: hidden;
   width: 100vw;
   height: 100vh;
   position: absolute;
   user-select: none;
-
-  background-color: #f3f3f3;
+  transition: transform var(--transitionDuration);
 }
 
-.App[data-serie="0"] {
-  background-color: #c9e9e6;
+.menuOpen .offCanvas {
+  transform: translateX(0);  
 }
 
-.App[data-serie="1"] {
-  background-color: #53aee3;
+.menuOpen .gameBoard {
+  transform: translateX(var(--offCanvasWidth));  
 }
 
-.App[data-serie="2"] {
-  background-color: #75c482;
+.menuButton {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  width: var(--buttonWidth);
+  height: var(--buttonWidth);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  z-index: 200;
+  overflow: hidden;
 }
 
-.App[data-serie="3"] {
-  background-color: #f8ef3c;
+.menuButtonBar {
+  height: 0.3rem;
+  width: var(--buttonWidth);
+  background-color: teal;
+  transition: all var(--transitionDuration);
+  transform-origin: center center;
 }
 
-.App[data-serie="4"] {
-  background-color: #ff9900;
+.middleBar {
+  background-color: transparent;
+  position: relative;
 }
 
-.App[data-serie="5"] {
-  background-color: #ef5e67;
+.middleBar * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: all var(--transitionDuration);
+  transform-origin: center center;    
+  background-color: teal;  
 }
 
-.App[data-serie="6"] {
-  background-color: #c05aa3;
+.menuOpen .topBar {
+  transform: translateY(-200%);
 }
 
-.App[data-serie="7"] {
-  background-color: #eaa3b3;
+.menuOpen .middleBar1 {
+  transform: rotate(-45deg);
 }
 
+.menuOpen .middleBar2 {
+  transform: rotate(45deg);
+}
 
+.menuOpen .bottomBar {
+  transform: translateY(200%);
+}
 
+.maxNumberLabel {
+  text-transform: uppercase;
+  font-weight: bold;
+  color: teal;
+}
 
-
-
-
-
+.maxNumberInput {
+  padding: 1rem;
+  border: solid 2px teal
+}
 
 .numbers {
   position: relative;

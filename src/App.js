@@ -38,13 +38,9 @@ class App extends Component {
   constructor(props) {
     super(props);
 
-    const numbers = this.generateNumbers();
-    const turnNumbers = this.generateTurnsNumbers(numbers);
-
     this.state = {
-      numbers,
-      turnNumbers,
-      issuedNumber: shuffle(numbers),
+      menuOpen: false,
+      maxNumbers: 100,
       animating: false,
       animationPos: 0,
       currentPos: 0,
@@ -52,6 +48,15 @@ class App extends Component {
       showResult: false,
       serie: 0,
     };
+
+    const numbers = this.generateNumbers();
+    const turnNumbers = this.generateTurnsNumbers(numbers);
+
+    this.state = Object.assign({}, this.state, {
+      numbers,
+      turnNumbers,
+      issuedNumber: shuffle(numbers),
+    });
 
     this.animate = this.animate.bind(this);
 
@@ -61,7 +66,7 @@ class App extends Component {
     } else {
       this.audio = new Audio(beepAudio);
     }
-    
+
 
     this.io = io({
       path: "/interface"
@@ -84,7 +89,6 @@ class App extends Component {
 
   componentDidMount() {
     window.addEventListener("keydown", this.onKeyDown.bind(this));
-    window.addEventListener("dblclick", this.onDblClick.bind(this));
     this.animate();
   }
 
@@ -112,7 +116,8 @@ class App extends Component {
   }
 
   generateNumbers() {
-    return shuffle(Array.apply(null, Array(100)).map((e, i) => i + 1));
+    const maxNumbers = parseInt(this.state.maxNumbers);
+    return shuffle(Array.apply(null, Array(maxNumbers)).map((e, i) => i + 1));
   }
 
   generateTurnsNumbers(numbers) {
@@ -128,8 +133,8 @@ class App extends Component {
   reset() {
     return new Promise((resolve, reject) => {
 
-        const numbers = this.generateNumbers();
-        const turnNumbers = this.generateTurnsNumbers(numbers);
+      const numbers = this.generateNumbers();
+      const turnNumbers = this.generateTurnsNumbers(numbers);
 
       this.setState(
         {
@@ -197,12 +202,15 @@ class App extends Component {
     this.t.easing(TWEEN.Easing.Exponential.InOut);
     // this.t.easing(TWEEN.Easing.Cubic. Out);
 
+    this.setState({
+      menuOpen: false,
+    });
     let _self = this;
     let lastPos = null;
     let minPlayDistance = 0.001;
     let lastDelta = 0;
 
-    this.t.onUpdate(function(delta) {
+    this.t.onUpdate(function (delta) {
       let currentPos = Math.floor(this.pos);
 
       if (
@@ -300,6 +308,14 @@ class App extends Component {
     }
   }
 
+  toggleMenu() {
+    this.setState({menuOpen: !this.state.menuOpen});
+  }
+
+  updateMaxNumbers(maxNumbers) {
+    this.setState({maxNumbers}, () => this.reset());
+  }
+
   render() {
     const timerAnimation = {
       // width: (this.state.animationPos * 100) + "%"
@@ -310,70 +326,92 @@ class App extends Component {
       ? "wheel__figure wheel__figure--start-rotation"
       : "";
 
+    const menuOpenClass = this.state.menuOpen ? " menuOpen" : "";
+
     return (
-      <div className="App" data-serie={this.state.serie}>
-        <div className="numbers">
-          {/*{ this.state.currentPos }*/}
-
-          {/*{ this.state.wheelNumbers.map(n => <Number key={n} number={n} />)}*/}
-          <Number
-            pos={this.state.currentPos}
-            wheelNumbers={this.state.turnNumbers}
-            offset={-4}
-          />
-          <Number
-            pos={this.state.currentPos}
-            wheelNumbers={this.state.turnNumbers}
-            offset={-3}
-          />
-          <Number
-            pos={this.state.currentPos}
-            wheelNumbers={this.state.turnNumbers}
-            offset={-2}
-          />
-          <Number
-            pos={this.state.currentPos}
-            wheelNumbers={this.state.turnNumbers}
-            offset={-1}
-          />
-          <Number
-            className="marker"
-            pos={this.state.currentPos}
-            wheelNumbers={this.state.turnNumbers}
-            offset={0}
-          />
-          <Number
-            pos={this.state.currentPos}
-            wheelNumbers={this.state.turnNumbers}
-            offset={1}
-          />
-          <Number
-            pos={this.state.currentPos}
-            wheelNumbers={this.state.turnNumbers}
-            offset={2}
-          />
-          <Number
-            pos={this.state.currentPos}
-            wheelNumbers={this.state.turnNumbers}
-            offset={3}
-          />
-          <Number
-            pos={this.state.currentPos}
-            wheelNumbers={this.state.turnNumbers}
-            offset={4}
-          />
-
-          <div className="timer" style={timerAnimation} />
+      <div className={"App" + menuOpenClass} data-serie={this.state.serie}>
+        <div className="offCanvas">
+            <label className="maxNumbersWrapper">
+              <span className="maxNumberLabel">participants</span>
+              <input className="maxNumberInput" type="number" value={this.state.maxNumbers} onChange={(ev) => this.updateMaxNumbers(ev.target.value)} />
+            </label>
         </div>
+        <div className="gameBoard"
+          onDoubleClick={() => this.onDblClick()}
+        >
+          <button
+            className="menuButton"
+            onClick={() => this.toggleMenu()}
+          >
+            <div className="menuButtonBar topBar"></div>
+            <div className="menuButtonBar middleBar">
+              <div className="middleBar1"></div>
+              <div className="middleBar2"></div>
+            </div>
+            <div className="menuButtonBar bottomBar"></div>
+          </button>
+          <div className="numbers">
+            {/*{ this.state.currentPos }*/}
 
-        <div className="wheel__container">
-          <div className={`wheel__figure ${wheelFigureClass}`} />
+            {/*{ this.state.wheelNumbers.map(n => <Number key={n} number={n} />)}*/}
+            <Number
+              pos={this.state.currentPos}
+              wheelNumbers={this.state.turnNumbers}
+              offset={-4}
+            />
+            <Number
+              pos={this.state.currentPos}
+              wheelNumbers={this.state.turnNumbers}
+              offset={-3}
+            />
+            <Number
+              pos={this.state.currentPos}
+              wheelNumbers={this.state.turnNumbers}
+              offset={-2}
+            />
+            <Number
+              pos={this.state.currentPos}
+              wheelNumbers={this.state.turnNumbers}
+              offset={-1}
+            />
+            <Number
+              className="marker"
+              pos={this.state.currentPos}
+              wheelNumbers={this.state.turnNumbers}
+              offset={0}
+            />
+            <Number
+              pos={this.state.currentPos}
+              wheelNumbers={this.state.turnNumbers}
+              offset={1}
+            />
+            <Number
+              pos={this.state.currentPos}
+              wheelNumbers={this.state.turnNumbers}
+              offset={2}
+            />
+            <Number
+              pos={this.state.currentPos}
+              wheelNumbers={this.state.turnNumbers}
+              offset={3}
+            />
+            <Number
+              pos={this.state.currentPos}
+              wheelNumbers={this.state.turnNumbers}
+              offset={4}
+            />
+
+            <div className="timer" style={timerAnimation} />
+          </div>
+
+          <div className="wheel__container">
+            <div className={`wheel__figure ${wheelFigureClass}`} />
+          </div>
+
+          <div className={`issuedNumber ${this.state.showResult ? 'issuedNumber--visible' : ''}`}>
+            <span>{this.state.resultNumber}</span>
+          </div>
         </div>
-
-      <div className={`issuedNumber ${this.state.showResult ? 'issuedNumber--visible' : ''}`}>
-          <span>{this.state.resultNumber}</span>
-      </div>
-
       </div>
     );
   }
